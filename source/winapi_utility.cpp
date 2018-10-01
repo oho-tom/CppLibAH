@@ -22,12 +22,12 @@
 namespace winapi_utility
 {
 /*
- @brief モジュールのパス取得
- @param[out] module_path モジュールのパス
+ @brief モジュールのディレクトリ取得
+ @param[out] module_directory モジュールのディレクトリ
  @retval true 成功
  @retval false 失敗
 */
-bool GetModulePath(std::wstring& module_path)
+bool GetModuleDirectory(std::wstring& module_directory)
 {
 	wchar_t temporary_path[_MAX_PATH];
 	memset(temporary_path, 0x00, sizeof(temporary_path));
@@ -38,7 +38,7 @@ bool GetModulePath(std::wstring& module_path)
 	if (last_backslash != NULL)
 		temporary_path[(int)(last_backslash - temporary_path)] = 0x00;
 
-	module_path = string_utility::Format(L"%s", temporary_path);
+	module_directory = string_utility::Format(L"%s", temporary_path);
 
 	return true;
 }

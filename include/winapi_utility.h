@@ -17,7 +17,7 @@
 */
 namespace winapi_utility
 {
-//! モジュールのパス取得
-extern bool GetModulePath(std::wstring& module_path);
+//! モジュールのディレクトリ取得
+extern bool GetModuleDirectory(std::wstring& module_directory);
 };
 #endif // CPPLIB_WINAPI_UTILITY_H_
