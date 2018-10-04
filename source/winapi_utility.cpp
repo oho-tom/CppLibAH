@@ -42,4 +42,96 @@ bool GetModuleDirectory(std::wstring& module_directory)
 
 	return true;
 }
+
+bool CreateFolderList(const std::wstring& strDir, std::vector<std::wstring>& vFolderList)
+{
+	try
+	{
+		//----------------------------------------------------------------------
+		// 指定フォルダ以下のフォルダリストを取得
+		//----------------------------------------------------------------------
+		WIN32_FIND_DATAW tFindData;
+		std::wstring strTarget;
+		if (strDir.back() != '\\') {
+			strTarget = strDir + L"\\*";
+		}
+		else {
+			strTarget = strDir + L"*";
+		}
+		HANDLE hFindFolder = FindFirstFileW(strTarget.c_str(), &tFindData);
+		//----------------------------------------------------------------------
+		// 取得した一覧の数だけ繰返す
+		//----------------------------------------------------------------------
+		BOOL bGotFile = (hFindFolder != INVALID_HANDLE_VALUE);
+		while (bGotFile)
+		{
+			//------------------------------------------------------------------
+			// フォルダであるか判定
+			//------------------------------------------------------------------
+			if (!(tFindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			{
+				// 次の情報へ
+				bGotFile = FindNextFileW(hFindFolder, &tFindData);
+				continue;
+			}
+			std::wstring strFolderName(tFindData.cFileName);
+
+			//------------------------------------------------------------------
+			// 無効なフォルダを除外
+			//------------------------------------------------------------------
+			if (strFolderName == L"." || strFolderName == L"..")
+			{
+				// 次の情報へ
+				bGotFile = FindNextFileW(hFindFolder, &tFindData);
+				continue;
+			}
+
+			// 検索用の文字"\\*"を削除
+			if (strTarget.back() == '*')
+			{
+				strTarget.pop_back();
+			}
+			if (strTarget.back() == '\\')
+			{
+				strTarget.pop_back();
+			}
+
+			//------------------------------------------------------------------
+			// サブフォルダパス作成
+			//------------------------------------------------------------------
+			std::wstring strSubFolder = strTarget + L"\\" + strFolderName;
+			//------------------------------------------------------------------
+			// フォルダパスを出力変数に追加
+			//------------------------------------------------------------------
+			vFolderList.push_back(strSubFolder);
+			//------------------------------------------------------------------
+			// サブフォルダ以下検索
+			//------------------------------------------------------------------
+			if (!CreateFolderList(strSubFolder, vFolderList))
+			{
+				//--------------------------------------------------------------
+				// 検索ハンドルクローズ
+				//--------------------------------------------------------------
+				FindClose(hFindFolder);
+				return false;
+			}
+
+			//------------------------------------------------------------------
+			// 次の情報へ
+			//------------------------------------------------------------------
+			bGotFile = FindNextFileW(hFindFolder, &tFindData);
+		}
+		//----------------------------------------------------------------------
+		// 検索ハンドルクローズ
+		//----------------------------------------------------------------------
+		FindClose(hFindFolder);
+	}
+	catch (...)
+	{
+		// 例外
+		return false;
+	}
+	return true;
+}
+
 };

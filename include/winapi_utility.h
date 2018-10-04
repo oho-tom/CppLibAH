@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------
 // c++ header
 #include <string>
+#include <vector>
 
 /*
 @namespace winapi_utility
@@ -19,5 +20,8 @@ namespace winapi_utility
 {
 //! モジュールのディレクトリ取得
 extern bool GetModuleDirectory(std::wstring& module_directory);
+
+//! 指定ディレクトリ配下のフォルダリスト作成
+extern bool CreateFolderList(const std::wstring& strDir, std::vector<std::wstring>& vFolderList);
 };
 #endif // CPPLIB_WINAPI_UTILITY_H_
