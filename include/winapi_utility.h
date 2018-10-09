@@ -22,6 +22,6 @@ namespace winapi_utility
 extern bool GetModuleDirectory(std::wstring& module_directory);
 
 //! 指定ディレクトリ配下のフォルダリスト作成
-extern bool CreateFolderList(const std::wstring& strDir, std::vector<std::wstring>& vFolderList);
+extern bool CreateFolderList(const std::wstring& target_directory, const bool& isIncludingSubDirectory, std::vector<std::wstring>& folder_list);
 };
 #endif // CPPLIB_WINAPI_UTILITY_H_

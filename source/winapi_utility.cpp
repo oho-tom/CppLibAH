@@ -43,7 +43,7 @@ bool GetModuleDirectory(std::wstring& module_directory)
 	return true;
 }
 
-bool CreateFolderList(const std::wstring& strDir, std::vector<std::wstring>& vFolderList)
+bool CreateFolderList(const std::wstring& target_directory, const bool& isIncludingSubDirectory, std::vector<std::wstring>& folder_list)
 {
 	try
 	{
@@ -52,11 +52,11 @@ bool CreateFolderList(const std::wstring& strDir, std::vector<std::wstring>& vFo
 		//----------------------------------------------------------------------
 		WIN32_FIND_DATAW tFindData;
 		std::wstring strTarget;
-		if (strDir.back() != '\\') {
-			strTarget = strDir + L"\\*";
+		if (target_directory.back() != '\\') {
+			strTarget = target_directory + L"\\*";
 		}
 		else {
-			strTarget = strDir + L"*";
+			strTarget = target_directory + L"*";
 		}
 		HANDLE hFindFolder = FindFirstFileW(strTarget.c_str(), &tFindData);
 		//----------------------------------------------------------------------
@@ -103,17 +103,20 @@ bool CreateFolderList(const std::wstring& strDir, std::vector<std::wstring>& vFo
 			//------------------------------------------------------------------
 			// フォルダパスを出力変数に追加
 			//------------------------------------------------------------------
-			vFolderList.push_back(strSubFolder);
+			folder_list.push_back(strSubFolder);
 			//------------------------------------------------------------------
 			// サブフォルダ以下検索
 			//------------------------------------------------------------------
-			if (!CreateFolderList(strSubFolder, vFolderList))
+			if(isIncludingSubDirectory)
 			{
-				//--------------------------------------------------------------
-				// 検索ハンドルクローズ
-				//--------------------------------------------------------------
-				FindClose(hFindFolder);
-				return false;
+				if (!CreateFolderList(strSubFolder, true, folder_list))
+				{
+					//--------------------------------------------------------------
+					// 検索ハンドルクローズ
+					//--------------------------------------------------------------
+					FindClose(hFindFolder);
+					return false;
+				}
 			}
 
 			//------------------------------------------------------------------
